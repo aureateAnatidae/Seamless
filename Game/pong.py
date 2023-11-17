@@ -1,4 +1,5 @@
 import pygame
+import random
 
 pygame.init()
 
@@ -76,7 +77,6 @@ class Ball:
         self.yFac = -1
         self.ball = pygame.draw.circle(
             screen, self.color, (self.x, self.y), self.radius)
-        self.firstTime = 1
 
     def display(self):
         self.ball = pygame.draw.circle(
@@ -84,6 +84,7 @@ class Ball:
 
     def update(self):
         ball_speed = difficulty_settings[difficulty]
+
         self.x += ball_speed*self.xFac
         self.y += ball_speed*self.yFac
 
@@ -102,8 +103,8 @@ class Ball:
     def reset(self):
         self.x = WIDTH//2
         self.y = HEIGHT//2
-        self.xFac *= -1
-        self.firstTime = 1
+        self.xFac = random.choice([-1, 1])
+        self.yFac = random.choice([-1, 1])
 
     # Used to reflect the ball along the X-axis
     def hit(self, sides, playerY):
@@ -128,7 +129,7 @@ class difficulty_indicator:
         pygame.draw.rect(screen, self.color_map[difficulty], self.rect)
 
 
-def main(second_cap=10):
+def main(second_cap=100):
 
     running = True
 
