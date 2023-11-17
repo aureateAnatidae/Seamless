@@ -1,4 +1,4 @@
-from brainflow.board_shim import BoardIds, BrainFlowInputParams
+from brainflow.board_shim import BoardShim, BoardIds, BrainFlowInputParams
 from brainflow.data_filter import DataFilter, FilterTypes
 import numpy as np
 import matplotlib.pyplot as plt
