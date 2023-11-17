@@ -116,6 +116,18 @@ class Ball:
         return self.ball
 
 
+class difficulty_indicator:
+    def __init__(self, difficulty):
+        self.color_map = {"easy": (0, 255, 0), "normal": (
+            255, 255, 0), "hard": (255, 0, 0)}
+        self.rect = pygame.Rect(20, 20, 15, 15)
+        self.difficulty = difficulty
+        self.color = self.color_map[self.difficulty]
+
+    def display(self):
+        pygame.draw.rect(screen, self.color_map[difficulty], self.rect)
+
+
 def main(second_cap=10):
 
     running = True
@@ -130,6 +142,7 @@ def main(second_cap=10):
     Score = 0
     paddleVel = 0
     frames = 0
+    difficultyind = difficulty_indicator(difficulty)
 
     while running and frames < frame_cap:
 
@@ -166,10 +179,11 @@ def main(second_cap=10):
         # Displaying the objects on the screen
         player.display()
         ball.display()
+        difficultyind.display()
 
         # Displaying the scores of the players
-        player.displayScore("Score : ",
-                            Score, 100, 20, (255, 255, 255))
+        # player.displayScore("Score : ",
+        #                    Score, 100, 20, (255, 255, 255))
 
         pygame.display.update()
         clock.tick(FPS)
