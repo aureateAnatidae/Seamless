@@ -130,6 +130,9 @@ class difficulty_indicator:
 
 def main(second_cap=10):
 
+    start_state = True
+    countdown_timer = FPS * 3
+
     running = True
 
     frame_cap = second_cap * FPS
@@ -145,7 +148,7 @@ def main(second_cap=10):
     difficultyind = difficulty_indicator(difficulty)
 
     while running and frames < frame_cap:
-
+        
         screen.fill((0, 0, 0))
 
         # Event handling
@@ -166,20 +169,27 @@ def main(second_cap=10):
                 ball.hit(True, player.y)
             else:
                 ball.hit(False, player.y)
-        frames += 1
+        if start_state:
+            text_display(f"Start in: {countdown_timer // FPS}",400,300,(255,255,255))
+            countdown_timer -= 1
+            if countdown_timer <= 0:
+                start_state = False 
+        else:
+            frames += 1
 
-        # Updating the objects
-        player.update(paddleVel)
-        point = ball.update()
+            # Updating the objects
+            player.update(paddleVel)
+            point = ball.update()
 
-        if point:
-            Score += 1
-            ball.reset()
+            if point:
+                Score += 1
+                ball.reset()
 
-        # Displaying the objects on the screen
-        player.display()
-        ball.display()
-        difficultyind.display()
+            # Displaying the objects on the screen
+            player.display()
+            ball.display()
+            difficultyind.display()
+        
 
         # Displaying the scores of the players
         # player.displayScore("Score : ",
@@ -188,7 +198,12 @@ def main(second_cap=10):
         pygame.display.update()
         clock.tick(FPS)
 
+def text_display(text,x,y,color):
+    text = font.render(text, True, color)
+    textRect = text.get_rect()
+    textRect.center = (x,y)
 
+    screen.blit(text, textRect)
 if __name__ == "__main__":
     main()
     pygame.quit()
