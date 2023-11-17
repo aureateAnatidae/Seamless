@@ -1,2 +1,5 @@
 #this is our pycache
 __pycache__/
+
+# IDE configs
+.spyproject/
