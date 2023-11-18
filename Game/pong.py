@@ -1,4 +1,5 @@
 import pygame
+import random
 
 pygame.init()
 
@@ -76,7 +77,6 @@ class Ball:
         self.yFac = -1
         self.ball = pygame.draw.circle(
             screen, self.color, (self.x, self.y), self.radius)
-        self.firstTime = 1
 
     def display(self):
         self.ball = pygame.draw.circle(
@@ -84,6 +84,7 @@ class Ball:
 
     def update(self):
         ball_speed = difficulty_settings[difficulty]
+
         self.x += ball_speed*self.xFac
         self.y += ball_speed*self.yFac
 
@@ -102,8 +103,8 @@ class Ball:
     def reset(self):
         self.x = WIDTH//2
         self.y = HEIGHT//2
-        self.xFac *= -1
-        self.firstTime = 1
+        self.xFac = random.choice([-1, 1])
+        self.yFac = random.choice([-1, 1])
 
     # Used to reflect the ball along the X-axis
     def hit(self, sides, playerY):
@@ -116,7 +117,22 @@ class Ball:
         return self.ball
 
 
-def main(second_cap=10):
+class difficulty_indicator:
+    def __init__(self, difficulty):
+        self.color_map = {"easy": (0, 255, 0), "normal": (
+            255, 255, 0), "hard": (255, 0, 0)}
+        self.rect = pygame.Rect(20, 20, 15, 15)
+        self.difficulty = difficulty
+        self.color = self.color_map[self.difficulty]
+
+    def display(self):
+        pygame.draw.rect(screen, self.color_map[difficulty], self.rect)
+
+
+def main(second_cap=100):
+
+    start_state = True
+    countdown_timer = FPS * 3
 
     running = True
 
@@ -130,9 +146,10 @@ def main(second_cap=10):
     Score = 0
     paddleVel = 0
     frames = 0
+    difficultyind = difficulty_indicator(difficulty)
 
     while running and frames < frame_cap:
-
+        
         screen.fill((0, 0, 0))
 
         # Event handling
@@ -153,28 +170,41 @@ def main(second_cap=10):
                 ball.hit(True, player.y)
             else:
                 ball.hit(False, player.y)
-        frames += 1
+        if start_state:
+            text_display(f"Start in: {countdown_timer // FPS}",400,300,(255,255,255))
+            countdown_timer -= 1
+            if countdown_timer <= 0:
+                start_state = False 
+        else:
+            frames += 1
 
-        # Updating the objects
-        player.update(paddleVel)
-        point = ball.update()
+            # Updating the objects
+            player.update(paddleVel)
+            point = ball.update()
 
-        if point:
-            Score += 1
-            ball.reset()
+            if point:
+                Score += 1
+                ball.reset()
 
-        # Displaying the objects on the screen
-        player.display()
-        ball.display()
+            # Displaying the objects on the screen
+            player.display()
+            ball.display()
+            difficultyind.display()
+        
 
         # Displaying the scores of the players
-        player.displayScore("Score : ",
-                            Score, 100, 20, (255, 255, 255))
+        # player.displayScore("Score : ",
+        #                    Score, 100, 20, (255, 255, 255))
 
         pygame.display.update()
         clock.tick(FPS)
 
+def text_display(text,x,y,color):
+    text = font.render(text, True, color)
+    textRect = text.get_rect()
+    textRect.center = (x,y)
 
+    screen.blit(text, textRect)
 if __name__ == "__main__":
     main()
     pygame.quit()
