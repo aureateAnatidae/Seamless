@@ -2,17 +2,21 @@ import logging
 logging = logging.getLogger('ML_stream')
 
 import numpy as np
+import time
 
 from braindecode.preprocessing import (Preprocessor,
                                        exponential_moving_standardize,
-                                       preprocess)
+                                       preprocess,
+                                       create_windows_from_events)
+import asyncio
+#import livedata.xdf, easydata.xdf, mediumdata.xdf <- WRITE DATA IN THIS ROOT FOLDER
 
 class classifier:
     '''
     Entire object of the ML algorithm processing the streamed data
     '''
-    def __init__(self, high_cut=50,
-                 low_cut=3,
+    def __init__(self, high_cut=55,
+                 low_cut=1,
                  factor_new=1e-3,
                  init_block_size=1000):
         '''
@@ -28,6 +32,10 @@ class classifier:
             weight for recent points
         init_block_size : int, default 1000
             size of data block to observe
+        self.window_size : int, start at 0.5
+        self.last_eval_time : int, start at 0
+            integers determining how long into the past to evaluate when
+            live_eval is called
         
         Attributes
         ----------
@@ -47,6 +55,8 @@ class classifier:
                          factor_new=self.factor_new, 
                          init_block_size=self.init_block_size)
             ]
+        self.window_size = 0
+        self.last_eval_time = time.time()
     
     def preprocess(self, data):
         '''
@@ -57,17 +67,53 @@ class classifier:
         ----------
         data : file object
             data to be evaluated by the algorithm
+            
+        Returns
+        -------
+        prepped_data : BaseConcatDataset object
+            data that has undergone preprocessing operations in .mne or .epoch
         '''
-        preprocess(data, self.preprocessors, n_jobs=-1)
+        prepped_data = preprocess(data, self.preprocessors, n_jobs=-1)
+        return prepped_data
     
-    def trial_eval(self, data, tag=None):
+    def live_eval(self, data, dataset, tag=None):
         '''
-        Post-hoc training on game-initiating data
+        Live post-hoc (yes) training on game-initiating data
+        Generates window from window_size (time from last evaluation), 
+        async evaluation on the timespan window_size
         
         Parameters
         ----------
         data : file object
             data to be evaluated by the algorithm
+        dataset : file objects
+            old data to compare new data to
         tag : str, optional
             assign the data to a group using string tags
+            
+        Attributes
+        ----------
+        window_size : int
+            determines how large of a time window to evaluate
+        last_eval_time : int
+            last time the data was evaluated
         '''
+        self.window_size = time.time() - self.last_eval_time()
+        self.last_eval_time = time.time()
+        self.sfreq = dataset.datasets[0].raw.info["sfreq"]
+        assert all([ds.raw.info["sfreq"] == sfreq for ds in dataset.datasets])
+        trial_start_offset_samples = int(self.window_size*sfreq)
+        
+        windows_dataset = create_windows_from_events(
+            dataset,
+            trial_start_offset_samples=trial_start_offset_samples,
+            trial_stop_offset_samples=0,
+            preload=True
+        )
+        
+        
+        
+        
+        
+        
+        
