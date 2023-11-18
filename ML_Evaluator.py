@@ -90,7 +90,9 @@ class classifier:
             old data to compare new data to
         tag : str, optional
             assign the data to a group using string tags
-            
+        sfreq : int
+            Hz of the sampled data
+        
         Attributes
         ----------
         window_size : int
@@ -101,8 +103,8 @@ class classifier:
         self.window_size = time.time() - self.last_eval_time()
         self.last_eval_time = time.time()
         self.sfreq = dataset.datasets[0].raw.info["sfreq"]
-        assert all([ds.raw.info["sfreq"] == sfreq for ds in dataset.datasets])
-        trial_start_offset_samples = int(self.window_size*sfreq)
+        assert all([ds.raw.info["sfreq"] == self.sfreq for ds in dataset.datasets])
+        trial_start_offset_samples = int(self.window_size*self.sfreq)
         
         windows_dataset = create_windows_from_events(
             dataset,
