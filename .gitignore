@@ -1,5 +1,8 @@
 #this is our pycache
 __pycache__/
 
+#local example
+ExampleData/
+
 # IDE configs
 .spyproject/
