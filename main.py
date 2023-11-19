@@ -6,18 +6,22 @@ import random
 from Live_Stream import Stream
 from FFT_Evaluator import classifier
 
-def callibration():
+def callibration(evaluator):
     pong.ball_speed = 4
     pong.difficulty = "easy"
     pong.main(10)
-
-    time.sleep(5)
+    eeg_score = evaluator.evaluate(10)
+    easy_AG_ratio = eeg_score[0][0] / eeg_score[0][4]
+    print(easy_AG_ratio)
 
     pong.ball_speed = 9
     pong.difficulty = "hard"
     pong.main(10)
+    eeg_score = evaluator.evaluate(10)
+    hard_AG_ratio = eeg_score[0][0] / eeg_score[0][4]
+    print(hard_AG_ratio)
 
-    time.sleep(5)
+    return easy_AG_ratio, hard_AG_ratio
 
 
 def difficulty_level(evaluator):
@@ -35,7 +39,9 @@ def difficulty_level(evaluator):
             pong.ball_speed = pong.ball_speed + 0.5 * 3
 
         print(pong.ball_speed)
-        evaluator.
+        eeg_score = evaluator.evaluate(2)
+        AG_ratio = eeg_score[0][0] / eeg_score[0][4]  # alpha gamma ratio
+        print(AG_ratio)
         pong.difficulty = random.choice(["easy", "hard"])
         time.sleep(2)
 
@@ -43,10 +49,10 @@ def difficulty_level(evaluator):
 # Start the stream connecting the Ganglion before opening game
 stream = Stream()
 # EEG evaluator object
-
+evaluator = classifier(stream)
 # Start the background task in a separate thread
-callibration()
-difficulty_thread = threading.Thread(target=difficulty_level)
+callibration(evaluator)
+difficulty_thread = threading.Thread(target=difficulty_level(evaluator))
 difficulty_thread.start()
 
 # Run the Pygame loop on the main thread
