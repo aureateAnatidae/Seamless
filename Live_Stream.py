@@ -22,10 +22,10 @@ class Stream:
         ganglion hardware ID
     '''
     def __init__(self):
-        params = BrainFlowInputParams()
-        params.serial_port = "COM3"  # Change this to the appropriate port
-        board_id = BoardIds.GANGLION_BOARD.value
-        self.board = BoardShim(board_id, params)
+        self.params = BrainFlowInputParams()
+        self.params.serial_port = "/dev/ttyACM0"  # Change this to the appropriate port
+        self.board_id = BoardIds.GANGLION_BOARD.value
+        self.board = BoardShim(self.board_id, self.params)
         self.board.prepare_session()
         self.board.start_stream()
 
@@ -39,23 +39,33 @@ class Stream:
     def get_data(self):
         data = self.board.get_board_data()
         return data
+    
+    def get_2048_flashes(self):
+        return self.board.get_current_board_data(2048)
+    
+    def get_sample_rate(self):
+        return self.board.get_sampling_rate(self.board_id)
+    
+    def get_board_id(self):
+        return self.board_id
+    
+    def get_channels(self):
+        return self.board.get_eeg_channels(self.board_id)
 
 def run_stream():
     with Stream() as streaming_obj:
-        try:
-            # Start streaming data
-            while True:
-                # Get data from the OpenBCI board
-                time.sleep(1)
-                data = streaming_obj.get_data()
-                # Check if data is non-empty (has elements)
-                if isinstance(data, np.ndarray) and data.size > 0:
-                    print(data, end='\r')  # Print data without newline to overwrite previous output
+        # Start streaming data
+        # with Class automatically calls __exit__ on leaving context scope
+        # no need to use try: except: especially since we want to release session on other exceptions too
+        # to release all sessions, call release_all_sessions()
+        while True:
+            # Get data from the OpenBCI board
+            time.sleep(1)
+            data = streaming_obj.get_data()
+            # Check if data is non-empty (has elements)
+            if isinstance(data, np.ndarray) and data.size > 0:
+                print(data, end='\r')  # Print data without newline to overwrite previous output
 
-                
-
-        except KeyboardInterrupt:
-            pass  
 
 if __name__ == "__main__":
     run_stream()
