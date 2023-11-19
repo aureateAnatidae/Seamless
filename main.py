@@ -21,7 +21,8 @@ def callibration(evaluator):
     hard_AG_ratio = eeg_score[0][0] / eeg_score[0][4]
     print(hard_AG_ratio)
 
-    return easy_AG_ratio, hard_AG_ratio
+    return easy_AG_ratio + hard_AG_ratio / 2    # the average is used
+                                                  
 
 
 def difficulty_level(evaluator):
