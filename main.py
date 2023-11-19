@@ -3,9 +3,8 @@ import threading
 import time
 import random
 # import ML part
-import sys
-sys.path.append('../Seamless')
-from ..FFT_Evaluator import classifier
+from Live_Stream import Stream
+from FFT_Evaluator import classifier
 
 def callibration():
     pong.ball_speed = 4
@@ -40,6 +39,12 @@ def difficulty_level():
         time.sleep(2)
 
 
+# Start the stream connecting the Ganglion before opening game
+stream = Stream()
+# Continuous EEG evaluation as thread
+start_time = time.time()
+window_size = 0.5
+power_band_thread = threading.Thread(target=)
 # Start the background task in a separate thread
 callibration()
 difficulty_thread = threading.Thread(target=difficulty_level)

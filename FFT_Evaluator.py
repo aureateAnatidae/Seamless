@@ -57,8 +57,8 @@ class classifier:
         for channel in prepped:
             channel = DataFilter.perform_fft(channel,
                                               WindowOperations(2))
-            plt.plot(channel)
-            plt.show()
+            #plt.plot(channel)
+            #plt.show()
         bandpowers = DataFilter.get_custom_band_powers(prepped,
                                                         [(0.5, 4), (4,8), (8,12), (12,35), (35,60)],
                                                         channels,
@@ -66,7 +66,8 @@ class classifier:
                                                         True)
         return bandpowers
 
-
+'''
 stream = Stream()
 meka = classifier(stream)
 meka.evaluate(6)
+'''
