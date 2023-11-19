@@ -14,9 +14,15 @@ pygame.display.set_caption("Pong")
 
 clock = pygame.time.Clock()
 FPS = 60
+global running
+running = True
 
 global difficulty
 difficulty = "normal"
+global difficulty_settings
+global ball_speed
+ball_speed = 6
+
 difficulty_settings = {
     "easy": 4,
     "normal": 6,
@@ -83,7 +89,8 @@ class Ball:
             screen, self.color, (self.x, self.y), self.radius)
 
     def update(self):
-        ball_speed = difficulty_settings[difficulty]
+        # ball_speed = difficulty_settings[difficulty]
+        global ball_speed
 
         self.x += ball_speed*self.xFac
         self.y += ball_speed*self.yFac
@@ -130,11 +137,12 @@ class difficulty_indicator:
 
 
 def main(second_cap=100):
+    global difficulty
+    global running
+    running = True
 
     start_state = True
     countdown_timer = FPS * 3
-
-    running = True
 
     frame_cap = second_cap * FPS
 
@@ -147,9 +155,13 @@ def main(second_cap=100):
     paddleVel = 0
     frames = 0
     difficultyind = difficulty_indicator(difficulty)
+    left_key_down = False
+    right_key_down = False
 
-    while running and frames < frame_cap:
-        
+    while running:
+        if frames >= frame_cap:
+            running = False
+
         screen.fill((0, 0, 0))
 
         # Event handling
@@ -158,25 +170,44 @@ def main(second_cap=100):
                 running = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    paddleVel = -1
+                    left_key_down = True
                 if event.key == pygame.K_RIGHT:
-                    paddleVel = 1
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
-                    paddleVel = 0
+                    right_key_down = True
+                if event.key == pygame.K_1:
+                    difficulty = "easy"
+                if event.key == pygame.K_2:
+                    difficulty = "normal"
+                if event.key == pygame.K_3:
+                    difficulty = "hard"
 
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_LEFT:
+                    left_key_down = False
+                if event.key == pygame.K_RIGHT:
+                    right_key_down = False
+
+        # ball paddle collision
         if pygame.Rect.colliderect(ball.get_rect(), player.get_rect()):
             if ((ball.x == player.x or ball.x == player.x + player.width) and player.y <= ball.y <= player.y+player.height):
                 ball.hit(True, player.y)
             else:
                 ball.hit(False, player.y)
+
         if start_state:
-            text_display(f"Start in: {countdown_timer // FPS}",400,300,(255,255,255))
+            text_display(
+                f"Start in: {countdown_timer // FPS}", 400, 300, (255, 255, 255))
             countdown_timer -= 1
             if countdown_timer <= 0:
-                start_state = False 
+                start_state = False
         else:
             frames += 1
+
+            if left_key_down:
+                paddleVel = -1
+            elif right_key_down:
+                paddleVel = 1
+            else:
+                paddleVel = 0
 
             # Updating the objects
             player.update(paddleVel)
@@ -190,7 +221,6 @@ def main(second_cap=100):
             player.display()
             ball.display()
             difficultyind.display()
-        
 
         # Displaying the scores of the players
         # player.displayScore("Score : ",
@@ -199,12 +229,15 @@ def main(second_cap=100):
         pygame.display.update()
         clock.tick(FPS)
 
-def text_display(text,x,y,color):
+
+def text_display(text, x, y, color):
     text = font.render(text, True, color)
     textRect = text.get_rect()
-    textRect.center = (x,y)
+    textRect.center = (x, y)
 
     screen.blit(text, textRect)
+
+
 if __name__ == "__main__":
     main()
     pygame.quit()
