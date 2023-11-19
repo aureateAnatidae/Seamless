@@ -43,7 +43,7 @@ def difficulty_level(evaluator, average):
         eeg_score = evaluator.evaluate(2)
         AG_ratio = eeg_score[0][0] / eeg_score[0][4]  # alpha gamma ratio
         print(AG_ratio)
-        pong.difficulty = "hard" if AG_ratio > average else "easy"
+        pong.difficulty = "hard" if AG_ratio < average else "easy"
         time.sleep(2)
 
 
