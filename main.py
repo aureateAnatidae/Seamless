@@ -25,7 +25,7 @@ def callibration(evaluator):
                                                   
 
 
-def difficulty_level(evaluator):
+def difficulty_level(evaluator, average):
     #   ML_thread = threading.Thread(target=ML)
     #   ML_thread.start()
     #   ML.main()
@@ -43,7 +43,7 @@ def difficulty_level(evaluator):
         eeg_score = evaluator.evaluate(2)
         AG_ratio = eeg_score[0][0] / eeg_score[0][4]  # alpha gamma ratio
         print(AG_ratio)
-        pong.difficulty = random.choice(["easy", "hard"])
+        pong.difficulty = "hard" if AG_ratio > average else "easy"
         time.sleep(2)
 
 
@@ -52,8 +52,8 @@ stream = Stream()
 # EEG evaluator object
 evaluator = classifier(stream)
 # Start the background task in a separate thread
-callibration(evaluator)
-difficulty_thread = threading.Thread(target=difficulty_level(evaluator))
+avg = callibration(evaluator)
+difficulty_thread = threading.Thread(target=difficulty_level(evaluator, avg))
 difficulty_thread.start()
 
 # Run the Pygame loop on the main thread
