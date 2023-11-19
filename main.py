@@ -48,16 +48,16 @@ def difficulty_level(evaluator, average):
 
 
 # Start the stream connecting the Ganglion before opening game
-stream = Stream()
-# EEG evaluator object
-evaluator = classifier(stream)
-# Start the background task in a separate thread
-avg = callibration(evaluator)
-difficulty_thread = threading.Thread(target=difficulty_level(evaluator, avg))
-difficulty_thread.start()
-
-# Run the Pygame loop on the main thread
-pong.main(10)
-
-# Wait for the background task to finish
-difficulty_thread.join()
+with Stream() as stream:
+    # EEG evaluator object
+    evaluator = classifier(stream)
+    # Start the background task in a separate thread
+    avg = callibration(evaluator)
+    difficulty_thread = threading.Thread(target=difficulty_level(evaluator, avg))
+    difficulty_thread.start()
+    
+    # Run the Pygame loop on the main thread
+    pong.main(10)
+    
+    # Wait for the background task to finish
+    difficulty_thread.join()
