@@ -20,7 +20,7 @@ def callibration():
     time.sleep(5)
 
 
-def difficulty_level():
+def difficulty_level(evaluator):
     #   ML_thread = threading.Thread(target=ML)
     #   ML_thread.start()
     #   ML.main()
@@ -35,16 +35,15 @@ def difficulty_level():
             pong.ball_speed = pong.ball_speed + 0.5 * 3
 
         print(pong.ball_speed)
+        evaluator.
         pong.difficulty = random.choice(["easy", "hard"])
         time.sleep(2)
 
 
 # Start the stream connecting the Ganglion before opening game
 stream = Stream()
-# Continuous EEG evaluation as thread
-start_time = time.time()
-window_size = 0.5
-power_band_thread = threading.Thread(target=)
+# EEG evaluator object
+
 # Start the background task in a separate thread
 callibration()
 difficulty_thread = threading.Thread(target=difficulty_level)
