@@ -3,7 +3,9 @@ import threading
 import time
 import random
 # import ML part
-
+import sys
+sys.path.append('../Seamless')
+from ..FFT_Evaluator import classifier
 
 def callibration():
     pong.ball_speed = 4
