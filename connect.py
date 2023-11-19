@@ -4,6 +4,12 @@ from brainflow.board_shim import BoardShim, BoardIds, BrainFlowInputParams
 class stream:
     '''
     Streaming object returning data from BoardShim on method get_data() call
+    PLEASE CALL WITH
+    ```
+    with stream as stream()
+        //such a function
+    -> automatic closed
+    ```
     
     Attributes
     ----------
@@ -21,10 +27,6 @@ class stream:
         self.board = BoardShim(board_id, params)
         self.board.prepare_session()
         self.board.start_stream()
-    
-    def __exit__(self):
-        self.board.stop_stream()
-        self.board.release_session()
 
     def get_data(self):
         data = self.board.get_board_data()
